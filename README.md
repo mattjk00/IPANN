@@ -1,6 +1,6 @@
 # IPANN
 ## SUNY New Paltz, Spring 2022
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1BzPH14UlSkKtqFjp0Wanaq3wRR0tlH5E)]
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1BzPH14UlSkKtqFjp0Wanaq3wRR0tlH5E)
 
 This repository is home to the Character classification neural network, used in the CLARA project.
 
