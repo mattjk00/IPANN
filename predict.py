@@ -95,7 +95,7 @@ def predict_folder(net, folder_path, output_file=None):
         images = dataiter.next()
         # Get prediction
         res = predict(net, images.float())
-        output += res + ' '
+        output += res + ' ' + test_image_paths[i] + '\n'
 
     if output_file == None:
         output_file = os.path.join(folder_path, 'OUTPUT.txt')
@@ -108,7 +108,8 @@ def main(path, out=None):
     '''
     Entry point. Loads the neural network and starts the prediction operation.
     '''
-    net = load_net('weights.pth')
+    w_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'weights.pth')
+    net = load_net(w_path)
     print('Processing...')
     predict_folder(net, path, out)
     print('Finished.')
