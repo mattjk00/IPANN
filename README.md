@@ -6,3 +6,8 @@ This repository is home to the Character classification neural network, used in 
 
 The image processing project for Spring 2022 is being worked on by Matthew Kleitz and Anas El Yousfi under the direction of Professor Hanh Pham
 
+# Usage
+Run the following command to classify the images in a folder. Replace /SOME_IMAGE_PATH/ with the folder containing jpg images.
+```
+python ./IPANN/predict.py --path /SOME_IMAGE_PATH/
+```
