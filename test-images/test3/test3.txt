@@ -1,0 +1,16 @@
+F ./test-images\test3\IMG_5194.jpg
+Z ./test-images\test3\IMG_519410.jpg
+6 ./test-images\test3\IMG_519411.jpg
+3 ./test-images\test3\IMG_519412.jpg
+o ./test-images\test3\IMG_519413.jpg
+2 ./test-images\test3\IMG_519414.jpg
+o ./test-images\test3\IMG_519415.jpg
+8 ./test-images\test3\IMG_519416.jpg
+B ./test-images\test3\IMG_51942.jpg
+1 ./test-images\test3\IMG_51943.jpg
+D ./test-images\test3\IMG_51944.jpg
+0 ./test-images\test3\IMG_51945.jpg
+K ./test-images\test3\IMG_51946.jpg
+5 ./test-images\test3\IMG_51947.jpg
+4 ./test-images\test3\IMG_51948.jpg
+1 ./test-images\test3\IMG_51949.jpg

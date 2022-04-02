@@ -1,1 +1,9 @@
-9 0 1 5 Z Z 4 7 X 
+9 ./test-images\IMG_202956.jpg
+0 ./test-images\IMG_202957.jpg
+1 ./test-images\IMG_202963.jpg
+5 ./test-images\IMG_204442.jpg
+Z ./test-images\IMG_204446.jpg
+Z ./test-images\IMG_204557.jpg
+4 ./test-images\IMG_204634.jpg
+7 ./test-images\IMG_208787.jpg
+X ./test-images\IMG_208788.jpg

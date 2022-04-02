@@ -11,3 +11,13 @@ Run the following command to classify the images in a folder. Replace /SOME_IMAG
 ```
 python ./IPANN/predict.py --path /SOME_IMAGE_PATH/
 ```
+To run predictions on every subdirectory in a given folder, add the --subdirs flag.
+
+```
+python ./IPANN/predict.py --path /SOME_IMAGE_PATH/ --subdirs
+```
+You can also specify an output directory using the --out argument.
+
+```
+python ./IPANN/predict.py --path /SOME_IMAGE_PATH/ --subdirs --out ./output/
+```

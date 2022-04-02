@@ -1,0 +1,8 @@
+F ./test-images\test2\IMG_09689.jpg
+H ./test-images\test2\IMG_096892.jpg
+3 ./test-images\test2\IMG_096893.jpg
+3 ./test-images\test2\IMG_096894.jpg
+F ./test-images\test2\IMG_096895.jpg
+2 ./test-images\test2\IMG_096896.jpg
+2 ./test-images\test2\IMG_096897.jpg
+1 ./test-images\test2\IMG_096898.jpg

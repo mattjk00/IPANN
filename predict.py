@@ -8,7 +8,7 @@ import os
 from matplotlib import pyplot as plt
 import numpy as np
 import torch
-from ann.net import Net, PredictSymbolDataset
+from ann.net import SPLIT, Net, PredictSymbolDataset
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from torch.utils.data import DataLoader
@@ -99,27 +99,46 @@ def predict_folder(net, folder_path, output_file=None):
 
     if output_file == None:
         output_file = os.path.join(folder_path, 'OUTPUT.txt')
+
     # Save output
     file = open(output_file, 'w+')
     file.write(output)
     file.close()
 
-def main(path, out=None):
+def main(path, subdirs, out=None):
     '''
     Entry point. Loads the neural network and starts the prediction operation.
     '''
+    print('Starting...')
     w_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'weights.pth')
     net = load_net(w_path)
-    print('Processing...')
-    predict_folder(net, path, out)
-    print('Finished.')
+    print('ANN Loaded. Processing...')
+
+    sdir_count = 0
+    if subdirs > 0:
+        for data_path in glob.glob(path + '/*'):
+            if os.path.isdir(data_path):
+                out_path = (out[0] if out is not None else data_path) + '/' + data_path.split(SPLIT)[-1] + '.txt'
+                sdir_count += 1
+                predict_folder(net, data_path, out_path)
+                print('Processed: %s' % out_path)
+    else:
+        sdir_count = 1
+        predict_folder(net, path, out[0] if out is not None else None)
+    
+    if sdir_count == 0:
+        print('\t[!Error!] It seems like the --path argument does not have any subdirectories! Nothing was processed!')
+    else:
+        print('Finished. Processed %d directories.' % sdir_count)
 
 if __name__ == '__main__':
 
     # Define command line arguments
     parser = argparse.ArgumentParser(description='~~~ IPANN (Image Processing Neural Network) ~~~\nSUNY New Paltz, 2022\nCLI Implemented by Matthew Kleitz')
     parser.add_argument('--path', type=str, required=True, help='Directory to process.')
-    parser.add_argument('-o', type=str, nargs=1, help='Output path for detected characters. Text file format.')
+    parser.add_argument('--out', type=str, nargs=1, help='Output path for detected characters. Text file format.')
+    parser.add_argument('--subdirs', action='count', default=0, help='Process all folders given in --path argument.')
     args = parser.parse_args()
+    print(args)
 
-    main(args.path, args.o)
+    main(args.path, args.subdirs, args.out)
