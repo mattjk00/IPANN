@@ -1,5 +1,7 @@
 opencv-python-headless==4.1.2.30
 torch
+torchvision
+scikit-learn
 albumentations
 numpy
 matplotlib
