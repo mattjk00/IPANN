@@ -14,6 +14,7 @@ from albumentations.pytorch import ToTensorV2
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import argparse
+from sortBounds import sort_label_output
 
 # Classes used in the neural network
 correct_classes = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 
@@ -52,8 +53,11 @@ def predict(net, img_tensor):
         The predicted class (string).
     '''
     output = net(img_tensor.float())
-
+    
     _, predicted = torch.max(output, 1)
+    #__, pred2 = torch.topk(output, 3)
+    #print(correct_classes[pred2[1]])
+    #print('\t', predicted[0], predicted[1])
     predict_class = correct_classes[predicted[0]]
 
     return predict_class
@@ -71,9 +75,9 @@ def predict_folder(net, folder_path, output_file=None):
     '''
     test_folder = folder_path
     test_image_paths = []
-
+    
     # Get the path of every image file in the test folder
-    for data_path in glob.glob(test_folder + '/*'):
+    for data_path in sorted(glob.glob(test_folder + '/*'), key=os.path.getmtime):
         if '.jpg' in data_path or '.jpeg' in data_path:
             test_image_paths.append(data_path)
     
@@ -130,6 +134,10 @@ def main(path, subdirs, out=None):
         print('\t[!Error!] It seems like the --path argument does not have any subdirectories! Nothing was processed!')
     else:
         print('Finished. Processed %d directories.' % sdir_count)
+
+    print('Sorting output...')
+    sort_label_output('/var/www/s22/clara-g4/ocr_results/')
+    print('Finished.')
 
 if __name__ == '__main__':
 
