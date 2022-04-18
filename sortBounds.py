@@ -152,8 +152,8 @@ def process_boxes(bs):
         ans = sortBounds(t1)
         tested.append(ans)
         results.append(squareness_score(ans))
-    mindex = tested.index(min(tested))
-    return results[mindex]
+    mindex = results.index(min(results))
+    return tested[mindex]
     
 
 def main():
