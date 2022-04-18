@@ -173,7 +173,7 @@ def main():
             Box(195, 265, 46, 64, '5')
         ]
     for i in range(5):
-        theta = (5*math.pi/3) * i * math.pi/6
+        theta = (5*math.pi/3) - i * math.pi/6
         t1 = rotate_boxes(bs, theta)
         #draw_boxes(t1)
         ans = sortBounds(t1)
