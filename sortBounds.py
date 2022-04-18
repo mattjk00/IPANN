@@ -147,7 +147,7 @@ def process_boxes(bs):
     tested = []
     results = []
     for i in range(6):
-        theta = i * math.pi/3
+        theta = (math.pi/4) - i * math.pi/12
         t1 = rotate_boxes(bs, theta)
         ans = sortBounds(t1)
         tested.append(ans)
@@ -172,12 +172,7 @@ def main():
             Box(126.5, 194.5, 47, 55, '4'),
             Box(195, 265, 46, 64, '5')
         ]
-    for i in range(6):
-        theta = (math.pi/4) - i * math.pi/12
-        t1 = rotate_boxes(bs, theta)
-        #draw_boxes(t1)
-        ans = sortBounds(t1)
-        print('Theta:', theta, 'Score:', squareness_score(ans))
+
     print(ans)
     for r in ans:
         for c in r:
