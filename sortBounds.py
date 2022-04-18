@@ -1,8 +1,15 @@
 from functools import cmp_to_key
+from math import cos, sin
+import math
+from xml.etree.ElementTree import PI
 from PIL import Image
 import glob
 import os
 from pathlib import Path
+from cv2 import rotate
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+import numpy as np
 
 def cmp_x(w, z):
     return w.x - z.x
@@ -79,7 +86,8 @@ def sort_single(lbl_name):
         b = Box(x, y, w, h, l=txt_data[i][0])
         boxes.append(b)
 
-    ans = sortBounds(boxes)
+    #ans = sortBounds(boxes)
+    ans = process_boxes(boxes)
     str_ans = []
     for r in ans:
         for c in r:
@@ -102,7 +110,54 @@ def sort_label_output(ipann_output_path):
             out_file.write(sortd)
             out_file.close()
 
+def factorize(num):
+    return [n for n in range(1, num + 1) if num % n == 0]
+
+def squareness_score(m):
+    height = len(m)
+    count = 0
+    for r in m:
+        diff = (height - len(r)) ** 2
+        count += diff
+    return math.sqrt(count)
+
+
+def rotate_boxes(bs, theta, origin=[0,0]):
+    rbs = []
+    M = np.array([[cos(theta), sin(theta), 0], [-sin(theta), cos(theta), 0], [0, 0, 1]])             # Rotation Matrix
+    T = np.array([[1, 0, 0], [0, 1, 0], [origin[0], origin[1], 1]])                                 # Translation Matrix
+    Tt = T.transpose()
+    for b in bs:
+        v = np.array([b.x, b.y, 0])
+        out = np.matmul(np.matmul(T, np.matmul(v, M)), Tt)
+        rbs.append(Box(out[0], out[1], b.width, b.height, l=b.lexeme))
+    return rbs
+
+def draw_boxes(bs):
+    fig, ax = plt.subplots()
+    ax.plot([0, 400],[0, 400], linewidth=0)
+    for box in bs:
+        Y = 400 - box.y
+        r = Rectangle((box.x, Y), box.width, box.height, edgecolor = 'green', facecolor = '#00000000',)
+        ax.annotate(box.lexeme, (box.x + box.width/2, Y + box.height/2), )
+        ax.add_patch(r)
+    plt.show()
+
+def process_boxes(bs):
+    tested = []
+    results = []
+    for i in range(6):
+        theta = i * math.pi/3
+        t1 = rotate_boxes(bs, theta)
+        ans = sortBounds(t1)
+        tested.append(ans)
+        results.append(squareness_score(ans))
+    mindex = tested.index(min(tested))
+    return results[mindex]
+    
+
 def main():
+    
     bs = [  Box(140.5, 347, 39, 52, '0'),
             Box(166, 191, 42, 54, '3'),
             Box(103.5, 349.5, 43, 55, '2'),
@@ -117,7 +172,13 @@ def main():
             Box(126.5, 194.5, 47, 55, '4'),
             Box(195, 265, 46, 64, '5')
         ]
-    ans = sortBounds(bs)
+    for i in range(6):
+        theta = i * math.pi/3
+        t1 = rotate_boxes(bs, theta)
+        #draw_boxes(t1)
+        ans = sortBounds(t1)
+        print('Theta:', theta, 'Score:', squareness_score(ans))
+    print(ans)
     for r in ans:
         for c in r:
             print(c, end='')
