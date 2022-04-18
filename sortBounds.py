@@ -146,8 +146,8 @@ def draw_boxes(bs):
 def process_boxes(bs):
     tested = []
     results = []
-    for i in range(8):
-        theta = (math.pi/3) - i * math.pi/12
+    for i in range(6):
+        theta = (math.pi/4) - i * math.pi/12
         t1 = rotate_boxes(bs, theta)
         ans = sortBounds(t1)
         tested.append(ans)
