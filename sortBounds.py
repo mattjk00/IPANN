@@ -56,11 +56,11 @@ def sortBounds(boxes, y_tresh=20):
     return rows
 
 def sort_single(lbl_name):
-    txt = open('/var/www/s22/clara-g4/ocr_results/%s.txt' % lbl_name)
+    txt = open('/var/www/s22/clara-g5/ocr_results/%s.txt' % lbl_name)
     txt_data = txt.read().splitlines()
     txt.close()
 
-    yolo_path = '/var/www/s22/clara-g4/yolov5Letter/runs/detect/exp/'
+    yolo_path = '/var/www/s22/clara-g5/yolov5Letter/runs/detect/exp/'
 
     bb_file = open('%s%s/%s.txt' % (yolo_path, 'labels',  lbl_name))
     bb_data = bb_file.read().splitlines()
@@ -106,7 +106,7 @@ def sort_label_output(ipann_output_path):
             #print(lbl_name)
             sortd = sort_single(lbl_name)
 #            print(sortd)
-            out_file = open('/var/www/s22/clara-g4/ocr_results/%s.txt' % lbl_name, 'w+')
+            out_file = open('/var/www/s22/clara-g5/ocr_results/%s.txt' % lbl_name, 'w+')
             out_file.write(sortd)
             out_file.close()
 
