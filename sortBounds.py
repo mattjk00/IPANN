@@ -1,12 +1,10 @@
 from functools import cmp_to_key
 from math import cos, sin
 import math
-from xml.etree.ElementTree import PI
 from PIL import Image
 import glob
 import os
 from pathlib import Path
-from cv2 import rotate
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import numpy as np
@@ -18,6 +16,9 @@ def cmp_y(w, z):
     return w[0].y - z[0].y
 
 class Box:
+    '''
+    Represents a bounding box used for object identification
+    '''
     def __init__(self, x, y, w, h, l='?'):
         self.x = x
         self.y = y
@@ -30,6 +31,16 @@ class Box:
         return self.lexeme#'%dx%d (%d, %d)' % (self.width, self.height, self.x, self.y)
     
 def sortBounds(boxes, y_tresh=20):
+    '''
+    Given a list of boxes, this function will return a 2 dimensional list of boxes.
+    Each list within the list represents a row of symbols.
+    Example:
+        If the label looked liked
+            F
+            .23
+        The output should look something like
+        [[Box<F>], [Box<.>, Box<2>, Box<3>]]
+    '''
     rows = []
     # Create Rows
     for i in range(len(boxes)):         
@@ -56,22 +67,31 @@ def sortBounds(boxes, y_tresh=20):
     return rows
 
 def sort_single(lbl_name):
+    '''
+    This method sorts the symbols on a single label given by lbl_name. It outputs a text file with the determined text representation of the label.
+    The method uses the following outputs from the IPANN for processing:
+        - The text file of classifications. (see predict.py)
+        - The bounding box data from the YOLOv5 step.
+    '''
     txt = open('/var/www/s22/clara-g5/ocr_results/%s.txt' % lbl_name)
     txt_data = txt.read().splitlines()
     txt.close()
 
     yolo_path = '/var/www/s22/clara-g5/yolov5Letter/runs/detect/exp/'
 
+    # Get the bounding box data
     bb_file = open('%s%s/%s.txt' % (yolo_path, 'labels',  lbl_name))
     bb_data = bb_file.read().splitlines()
     bb_file.close()
 
+    # Get the size of the label image. The bounding box data is normalized (0-1.0) and we want to convert it to pixels.
     lbl_image = Image.open('%s%s.jpg' % (yolo_path, lbl_name))
     width = lbl_image.width
     height = lbl_image.height
 
     boxes = []
 
+    # Generate Box objects based on the bounding box data and classified symbol (lexeme)
     for i, line in enumerate(bb_data):
         line_props = line.split(' ')
 
@@ -87,6 +107,7 @@ def sort_single(lbl_name):
         boxes.append(b)
 
     #ans = sortBounds(boxes)
+    # process the boxes and calculate the text output.
     ans = process_boxes(boxes)
     str_ans = []
     for r in ans:
@@ -98,22 +119,29 @@ def sort_single(lbl_name):
     
 
 def sort_label_output(ipann_output_path):
+    '''
+    This method sorts the text output for every label that was cropped.
+    '''
     #CROP_PATH = os.path.join('./yolov5Letter/runs/', input_name
+    
+    # Look at every file in the initial text output from ipann. These text files store unsorted classification data.
     for pth in glob.glob(ipann_output_path + '/*'):
         if os.path.isdir(pth) == False:
-            #print('\n\n', pth)
+            # Get the name of the label.
             lbl_name = Path(pth).stem
-            #print(lbl_name)
+            # Sort the symbols for that label
             sortd = sort_single(lbl_name)
-#            print(sortd)
+            # Overwrite the intermediate ocr_result text file with the sorted data.
             out_file = open('/var/www/s22/clara-g5/ocr_results/%s.txt' % lbl_name, 'w+')
             out_file.write(sortd)
             out_file.close()
 
-def factorize(num):
-    return [n for n in range(1, num + 1) if num % n == 0]
-
 def squareness_score(m):
+    '''
+    Gives a 'squareness score' to a given sorted box matrix.
+    The squareness score S is determined by the equation:
+        S = sqrt(sum_i(N - |A_i|)^2), where |A_i| is the length of each row of A and N is the number of rows in A.
+    '''
     height = len(m)
     count = 0
     for r in m:
@@ -123,17 +151,24 @@ def squareness_score(m):
 
 
 def rotate_boxes(bs, theta, origin=[0,0]):
+    '''
+    Given a list of Boxes, this function will return a list of boxes with coordinates rotated around a given origin with angle theta.
+    '''
     rbs = []
-    M = np.array([[cos(theta), sin(theta), 0], [-sin(theta), cos(theta), 0], [0, 0, 1]])             # Rotation Matrix
-    T = np.array([[1, 0, 0], [0, 1, 0], [origin[0], origin[1], 1]])                                 # Translation Matrix
+    M = np.array([[cos(theta), sin(theta), 0], [-sin(theta), cos(theta), 0], [0, 0, 1]])    # Rotation Matrix
+    T = np.array([[1, 0, 0], [0, 1, 0], [origin[0], origin[1], 1]])                         # Translation Matrix
     Tt = T.transpose()
     for b in bs:
         v = np.array([b.x, b.y, 0])
+        # Apply the linear operations
         out = np.matmul(np.matmul(T, np.matmul(v, M)), Tt)
         rbs.append(Box(out[0], out[1], b.width, b.height, l=b.lexeme))
     return rbs
 
 def draw_boxes(bs):
+    '''
+    Used for testing. Draws boxes.
+    '''
     fig, ax = plt.subplots()
     ax.plot([0, 400],[0, 400], linewidth=0)
     for box in bs:
@@ -144,6 +179,12 @@ def draw_boxes(bs):
     plt.show()
 
 def process_boxes(bs):
+    '''
+    Given a list of boxes, this method will run tests to determine the most likely orientation.
+    The set of boxes will be rotated from -45 to 45degrees. At each point, the squareness score will be stored.
+    After every angle is tested, the most square result will be used. 
+    This method is used in hopes of improving the ocr results for slanted books.
+    '''
     tested = []
     results = []
     for i in range(6):
