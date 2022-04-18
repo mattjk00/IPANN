@@ -136,7 +136,7 @@ def main(path, subdirs, out=None):
         print('Finished. Processed %d directories.' % sdir_count)
 
     print('Sorting output...')
-    sort_label_output('/var/www/s22/clara-g4/ocr_results/')
+    sort_label_output('/var/www/s22/clara-g5/ocr_results/')
     print('Finished.')
 
 if __name__ == '__main__':
