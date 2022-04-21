@@ -1,3 +1,6 @@
+'''
+Matthew Kleitz, SUNY New Paltz, Spring 2022
+'''
 from functools import cmp_to_key
 from math import cos, sin
 import math
@@ -8,6 +11,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import numpy as np
+from config import PATH
 
 def cmp_x(w, z):
     return w.x - z.x
@@ -73,11 +77,11 @@ def sort_single(lbl_name):
         - The text file of classifications. (see predict.py)
         - The bounding box data from the YOLOv5 step.
     '''
-    txt = open('/var/www/s22/clara-g5/ocr_results/%s.txt' % lbl_name)
+    txt = open('%socr_results/%s.txt' % (PATH(), lbl_name))
     txt_data = txt.read().splitlines()
     txt.close()
 
-    yolo_path = '/var/www/s22/clara-g5/yolov5Letter/runs/detect/exp/'
+    yolo_path = '%syolov5Letter/runs/detect/exp/' % PATH()
 
     # Get the bounding box data
     bb_file = open('%s%s/%s.txt' % (yolo_path, 'labels',  lbl_name))
@@ -132,7 +136,7 @@ def sort_label_output(ipann_output_path):
             # Sort the symbols for that label
             sortd = sort_single(lbl_name)
             # Overwrite the intermediate ocr_result text file with the sorted data.
-            out_file = open('/var/www/s22/clara-g5/ocr_results/%s.txt' % lbl_name, 'w+')
+            out_file = open('%socr_results/%s.txt' % (PATH(), lbl_name), 'w+')
             out_file.write(sortd)
             out_file.close()
 
@@ -198,7 +202,11 @@ def process_boxes(bs):
     
 
 def main():
-    
+    '''
+    The main function is only used for testing!
+    '''
+
+    # Test boxes
     bs = [  Box(140.5, 347, 39, 52, '0'),
             Box(166, 191, 42, 54, '3'),
             Box(103.5, 349.5, 43, 55, '2'),

@@ -15,6 +15,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 import argparse
 from sortBounds import sort_label_output
+from config import PATH
 
 # Classes used in the neural network
 correct_classes = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 
@@ -136,7 +137,7 @@ def main(path, subdirs, out=None):
         print('Finished. Processed %d directories.' % sdir_count)
 
     print('Sorting output...')
-    sort_label_output('/var/www/s22/clara-g5/ocr_results/')
+    sort_label_output('%socr_results/' % PATH())
     print('Finished.')
 
 if __name__ == '__main__':
